@@ -336,6 +336,37 @@ describe("useGamificationStore", () => {
     });
   });
 
+
+  describe("persistence", () => {
+    it("persists durable progress without replaying transient level-up UI", () => {
+      useGamificationStore.setState({
+        level: 3,
+        xp: 325,
+        kingdomTitle: "Lord",
+        showLevelUpModal: true,
+        pendingLevelUp: LEVEL_THRESHOLDS[2],
+        recentXPGain: 75,
+        soundEnabled: false,
+        animationsEnabled: false,
+        soundVolume: 0.25,
+      });
+
+      const persisted = JSON.parse(window.localStorage.getItem("remitlend-gamification") ?? "{}");
+
+      expect(persisted.state).toMatchObject({
+        level: 3,
+        xp: 325,
+        kingdomTitle: "Lord",
+        soundEnabled: false,
+        animationsEnabled: false,
+        soundVolume: 0.25,
+      });
+      expect(persisted.state.achievements).toEqual(useGamificationStore.getState().achievements);
+      expect(persisted.state).not.toHaveProperty("showLevelUpModal");
+      expect(persisted.state).not.toHaveProperty("pendingLevelUp");
+      expect(persisted.state).not.toHaveProperty("recentXPGain");
+    });
+  });
   describe("getNextLevelInfo / calculateLevel", () => {
     it.each([
       { xp: 0, currentLevel: 1, nextLevel: 2, xpToNext: 100, progress: 0 },

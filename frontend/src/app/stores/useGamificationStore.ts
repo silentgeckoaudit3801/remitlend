@@ -11,7 +11,7 @@
  */
 
 import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import { createJSONStorage, devtools, persist } from "zustand/middleware";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -323,6 +323,16 @@ export const useGamificationStore = create<GamificationStore>()(
       }),
       {
         name: "remitlend-gamification",
+        storage: createJSONStorage(() => localStorage),
+        partialize: (state) => ({
+          level: state.level,
+          xp: state.xp,
+          kingdomTitle: state.kingdomTitle,
+          achievements: state.achievements,
+          soundEnabled: state.soundEnabled,
+          animationsEnabled: state.animationsEnabled,
+          soundVolume: state.soundVolume,
+        }),
       },
     ),
     { name: "GamificationStore" },
